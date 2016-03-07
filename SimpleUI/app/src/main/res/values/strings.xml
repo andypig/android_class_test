@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SimpleUI</string>
+    <string name="textView_name">Hello My Friends!!</string>
+    <string name="checkbox_name">隱藏輸入</string>
 </resources>
