@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="storyInfo">
+        <item>東區 劉德華 </item>
+        <item>萬隆 彭于晏 </item>
+        <item>億載 金城武 </item>
+        <item>公館 馮迪索 </item>
+    </string-array>
+</resources>

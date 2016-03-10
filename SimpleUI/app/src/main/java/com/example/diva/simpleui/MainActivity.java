@@ -7,9 +7,12 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,16 +21,22 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     EditText editText;
     CheckBox hidecheckBox;
+    ListView listView;
+    Spinner spinner;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         textView = (TextView)findViewById(R.id.textView);
         editText = (EditText)findViewById(R.id.editText);
         hidecheckBox = (CheckBox)findViewById(R.id.checkBox);
+        listView = (ListView)findViewById(R.id.listView);
+        spinner = (Spinner)findViewById(R.id.spinner);
 
         sp = getSharedPreferences("setting", Context.MODE_PRIVATE); // 定義setting裡面的東西，供之後使用
         editor = sp.edit();
@@ -62,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //抓取畫面上hidecheckbox物件的值，如果有被勾選就帶入true，如果沒有勾選就是預設為false，再存回sp裡面的hidecheckbox
         hidecheckBox.setChecked(sp.getBoolean("hideCheckbox", false));
 
         hidecheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -72,8 +82,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //使用 自定義的function setListView()
+        setListView();
+        setSpinner();
     }
+
+    private void setListView()
+    {
+        //String[] data = {"1", "2", "3","4","5"};
+        String[] data = Utils.readFile(this, "history.txt").split("\n");
+
+        ArrayAdapter<String> adaptor = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data);
+
+        listView.setAdapter(adaptor);
+    }
+
+    private void setSpinner()
+    {
+        //String[] data = {"1", "2", "3","4","5"};
+        //String[] data = Utils.readFile(this, "history.txt").split("\n");
+        String[] data = getResources().getStringArray(R.array.storyInfo);
+
+        ArrayAdapter<String> adaptor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, data);
+
+        spinner.setAdapter(adaptor);
+    }
+
 
     public void submit(View view)
     {
@@ -82,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         //textView.setText("Test Test Test!!!");
 
         String text = editText.getText().toString();
+
+        Utils.writeFile(this, "history.txt", text + '\n');
 
         if(hidecheckBox.isChecked())
         {
@@ -107,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         textView.setText(text);
         editText.setText("");
+        setListView();
     }
 
 }
