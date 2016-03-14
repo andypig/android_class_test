@@ -2,4 +2,17 @@
     <string name="app_name">SimpleUI</string>
     <string name="textView_name">Hello My Friends!!</string>
     <string name="checkbox_name">隱藏輸入</string>
+    <string name="button">輸入</string>
+    <string name="button2">菜單</string>
+    <string name="button3">0</string>
+    <string name="button4">0</string>
+    <string name="button5">0</string>
+    <string name="button6">0</string>
+    <string name="button7">0</string>
+    <string name="button8">0</string>
+    <string name="button9">確認訂單</string>
+    <string name="button10">取消訂單</string>
+    <string name="textView2">蜜香紅茶</string>
+    <string name="textView3">伯爵奶茶</string>
+    <string name="textView4">高山綠茶</string>
 </resources>

@@ -1,9 +1,11 @@
 package com.example.diva.simpleui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE_MENU_ACTIVITY = 0;
 
     TextView textView;
     EditText editText;
@@ -144,6 +148,62 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(text);
         editText.setText("");
         setListView();
+    }
+
+    // 從Main Activity 切到 Drink Menu Activity
+    public void goToMenu(View view)
+    {
+        Intent intent = new Intent(); //建立一個Intent的物件
+        intent.setClass(this, DrinkMenuActivity.class);//當這個物件被使用到時，會將intent自己的class設定為DrinkMenuActivity的Class
+
+        //startActivity(intent);// 設定完intent的class後要去執行，這時當按下menu的按鈕後，就會跳到另一個Activity去。
+        startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY);
+    }
+
+
+    // 從Drink Menu Activity切回Main Activity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_MENU_ACTIVITY)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                textView.setText(data.getStringExtra("result"));
+            }
+        }
+    }
+
+    //Activity生命週期Check
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("debug", "Main onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("debug", "Main onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("debug", "Main onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("debug", "Main onStop");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("debug", "Main onRestart");
     }
 
 }
