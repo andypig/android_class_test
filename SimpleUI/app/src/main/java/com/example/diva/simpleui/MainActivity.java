@@ -18,6 +18,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_MENU_ACTIVITY = 0;
@@ -32,6 +37,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Parse連線設定
+        // 要import Namespace之前要在gradle的dependency加入兩個compile檔案的source來源路徑
+        // 之後右上角會出現sync now，要先sync完之後才能import Namespace
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this);
+
+        ParseObject testObject = new ParseObject("TestObject");
+        // 下面的key value改成自己的資訊
+        testObject.put("hi", "I am 1 N, thx");
+        // testObject.saveInBackground();
+        // 將上面Parse的執行結果的error log拋出來
+        testObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e != null)
+                {
+                    Log.d("debug", e.toString());
+                }
+            }
+        });
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
