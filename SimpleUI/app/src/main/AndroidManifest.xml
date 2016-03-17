@@ -16,10 +16,10 @@
         // Parse連線設定
         <meta-data
             android:name="com.parse.APPLICATION_ID"
-            android:value="XcUmvcSIMJefbmJDFcidLC6mNBQEAaGHYiGPSYAS" />
+            android:value="J1Jv0XjBPezieAgDeYo9FmAlUBCWaauVIs6mhvQ2" />
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="DnZ3ggXI55eF8ypD5bps3eBYQ0qAFCHehre5Wu6a" />
+            android:value="sBrwCLrxZKNVk2gyXjZMuGCJhUFChUBIbxeRtuqV" />
 
         <activity android:name=".MainActivity" >
             <intent-filter>

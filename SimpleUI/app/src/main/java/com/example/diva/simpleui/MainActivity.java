@@ -23,6 +23,10 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_MENU_ACTIVITY = 0;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
+    String menuResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +51,19 @@ public class MainActivity extends AppCompatActivity {
         Parse.initialize(this);
 
         ParseObject testObject = new ParseObject("TestObject");
+        //ParseObject testObject = new ParseObject("HomeworkParse");
+
         // 下面的key value改成自己的資訊
-        testObject.put("hi", "I am 1 N, thx");
+        testObject.put("hi", "Andypig");
+        //testObject.put("sid", "And26311");
+        //testObject.put("email", "a760405@gmail.com");
+
         // testObject.saveInBackground();
         // 將上面Parse的執行結果的error log拋出來
         testObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e != null)
-                {
+                if (e != null) {
                     Log.d("debug", e.toString());
                 }
             }
@@ -149,6 +158,27 @@ public class MainActivity extends AppCompatActivity {
 
         String text = editText.getText().toString();
 
+        // 設定按下Submit後會去上傳選單跟menu的資料到Parse Server
+        ParseObject orderObject = new ParseObject("Order");
+        orderObject.put("note", text);
+        orderObject.put("storeInfo", spinner.getSelectedItem());
+        orderObject.put("menu", menuResult);
+
+        orderObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e ==null)
+                {
+                    Toast.makeText(MainActivity.this, "Submit OK", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Submit Fail", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        // End of Parse Setting
+
         Utils.writeFile(this, "history.txt", text + '\n');
 
         if(hidecheckBox.isChecked())
@@ -198,7 +228,30 @@ public class MainActivity extends AppCompatActivity {
         {
             if (resultCode == RESULT_OK)
             {
-                textView.setText(data.getStringExtra("result"));
+                //textView.setText(data.getStringExtra("result"));
+
+                menuResult = data.getStringExtra("result");
+
+                try{
+                    JSONArray array = new JSONArray(menuResult);
+                    String text = "";
+                    for(int i=0; i<array.length(); i++)
+                    {
+                        JSONObject order = array.getJSONObject(i);
+
+                        String name = order.getString("name");
+                        String lNumber = String.valueOf(order.getInt("lNumber"));
+                        String mNumber = String.valueOf(order.getInt("mNumber"));
+
+                        text = text + name + "l:" + lNumber + "m:" + mNumber + "\n";
+
+                    }
+                    textView.setText(text);
+                }
+                catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
