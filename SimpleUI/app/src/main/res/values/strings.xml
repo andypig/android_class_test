@@ -15,4 +15,7 @@
     <string name="textView2">蜜香紅茶</string>
     <string name="textView3">伯爵奶茶</string>
     <string name="textView4">高山綠茶</string>
+    <string name="note">訂單內容</string>
+    <string name="storeInfo">分店名稱</string>
+    <string name="drinkNum">飲料數量</string>
 </resources>
