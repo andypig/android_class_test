@@ -46,6 +46,7 @@ public class DrinkMenuActivity extends AppCompatActivity {
         // 當按下確認後，JSON物件回傳
         JSONArray array = getData();
 
+
         Intent data = new Intent();
 
         // 下面是KEY, VALUE的概念
@@ -54,10 +55,53 @@ public class DrinkMenuActivity extends AppCompatActivity {
         // 用textView.setText(data.getStringExtra("result"));去取得String的格式資料。
         data.putExtra("result",array.toString()); // 似SharedPreferencese功能
 
+        //data.putExtra("drinkNum",array.toString());
+
+
+        // 按下done之後把資料抓出來，給予name, lNumber, mNumber這三種資料一個名為result的key值，
+        // 這邊再把抓出來的資料加上一個result code後包再一起成為data
+        // 然後用setResult把data跟result code打包再一起後回傳給onActivityResult
+        // 所以如果有result code的使用就要用startActivityForResult丟進intent跟request code
+        // 然後用setResult來設定回傳的result code與資料
         setResult(RESULT_OK, data);
 
         finish();
     }
+
+    /*private int drinkCount()
+    {
+        int lCount;
+        int mCount;
+
+        lCount = 0;
+        mCount = 0;
+
+
+
+        JSONArray array = getData();
+
+        for(int i =0; i < array.length(); i++) {
+            try {
+                //建立一個json格式的物件
+                JSONObject object = new JSONObject();
+
+
+
+                //把上面取得的資料，利用KEY, VALUE的JSON格式定義，分別塞進去name, lNumber, mNumber這三個key所代表的空間裡。
+                object.put("name", drinkName);
+                object.put("lNumber", lNumber);
+                object.put("mNumber", mNumber);
+
+                // 再把JSON格式的物件丟到一開始宣告的JSON格式的陣列裡面
+                array.put(object);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }*/
 
     public JSONArray getData()
     {

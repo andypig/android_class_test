@@ -60,8 +60,7 @@
         android:id="@+id/spinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/photoView"
-        android:layout_toLeftOf="@+id/button2" />
+        android:layout_below="@+id/photoView" />
 
     <Button
         android:layout_width="wrap_content"

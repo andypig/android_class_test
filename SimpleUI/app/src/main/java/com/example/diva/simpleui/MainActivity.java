@@ -189,9 +189,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setListView()
-    {
+    private void setListView() {
+        // 參考:https://parse.com/docs/android/api/com/parse/ParseQuery.html
+        // 先用Parse的連線設定去取得Parse裡面key值為Order的所有資料
+        // 意即query為在Parse資料庫中找class為Order的資料
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Order");
+        //接著在這些資料中，找所有資料存進一個剛new出來的物件
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -204,20 +207,22 @@ public class MainActivity extends AppCompatActivity {
 
                 List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 
-               for (int i =0; i < queryResults.size();i++)
-               {
+               for (int i =0; i < queryResults.size();i++) {
                    ParseObject object = queryResults.get(i);
                    String note = object.getString("note");
                    String storeInfo = object.getString("storeInfo");
-                   String menu = object.getString("menu");// 做又會用到
+                   //String menu = object.getString("menu");// 作業會用到
+                   String menu = object.getString("menu");
 
-                   String largeNum = object.getString("lNumber");
+                   // 計算杯數
+                   int totalCount = getDrinkCount(menu);
 
                    Map<String, String> item = new HashMap<String, String>();
 
                    item.put("note", note);
                    item.put("storeInfo", storeInfo);
-                   item.put("drinkNum", menu); // 作業:把裡面所有數量拿出來相加後，顯示出來
+                   //item.put("drinkNum",  menu);// 作業:把裡面所有數量拿出來相加後，顯示出來
+                   item.put("drinkNum",  String.valueOf(totalCount));
 
                    data.add(item);
                }
@@ -234,8 +239,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void submit(View view)
+    public int getDrinkCount(String menu)
     {
+        int totalCount = 0;
+        //當key為lNumber與mNumber時
+            try{
+                JSONArray objectCount = new JSONArray(menu);
+                for(int i = 0; i < objectCount.length(); i++)
+                {
+                    JSONObject jsonObject = objectCount.getJSONObject(i);
+                    totalCount = totalCount + jsonObject.getInt("mNumber") + jsonObject.getInt("lNumber");
+                }
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        //當key為l與m時
+        if(totalCount == 0) {
+            try {
+                JSONArray objectCount = new JSONArray(menu);
+                for (int i = 0; i < objectCount.length(); i++) {
+                    JSONObject jsonObject = objectCount.getJSONObject(i);
+                    totalCount = totalCount + jsonObject.getInt("m") + jsonObject.getInt("l");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else
+        {
+            Log.d("debug", "Can not count the drink number!!");
+        }
+
+        return totalCount;
+    }
+
+    // 紀哥的計算杯數寫法
+    public int count_menuResult(String menuResult) {
+       int cnt = 0;
+        try {
+            JSONArray array = new JSONArray(menuResult); //將menuResult(JSONArray=>String)轉成JSONArray(String=>JSONArray)
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject order = array.getJSONObject(i);
+
+                cnt = cnt + order.getInt("lNumber") + order.getInt("mNumber");
+                cnt = cnt + order.getInt("l") + order.getInt("m");
+                }
+            }catch(JSONException e){
+            e.printStackTrace();
+            }
+        return cnt;
+        }
+
+    public void submit(View view) {
         //Toast.makeText(this, "Hello DUDE!!!", Toast.LENGTH_LONG).show();// 第一個參數把自己傳入，第二個是要顯示的東西，第三個是顯示的時間
 
         //textView.setText("Test Test Test!!!");
@@ -243,6 +299,10 @@ public class MainActivity extends AppCompatActivity {
         String text = editText.getText().toString();
 
         // 設定按下Submit後會去上傳選單跟menu的資料到Parse Server
+        // 在Parse上面有訂一個Class叫做Order，所以我們要New一個Order的物件
+        // 然後把從畫面上的editText所輸入的備註資料塞進Order這個Class裡面的一個Key值稱note
+        // 接著把spinner所選到的資料，塞進Order這個Class裡面的一個Key值稱為storeInfo
+        // 最後把原本的DrinkMenuActivity得到的結果(稱為text)塞進Order這個Class裡面的一個值稱menu
         ParseObject orderObject = new ParseObject("Order");
         orderObject.put("note", text);
         orderObject.put("storeInfo", spinner.getSelectedItem());
@@ -251,12 +311,10 @@ public class MainActivity extends AppCompatActivity {
         orderObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e ==null)
-                {
+                if(e ==null) {
                     Toast.makeText(MainActivity.this, "Submit OK", Toast.LENGTH_LONG).show();
                 }
-                else
-                {
+                else {
                     Toast.makeText(MainActivity.this, "Submit Fail", Toast.LENGTH_LONG).show();
                 }
             }
@@ -265,8 +323,7 @@ public class MainActivity extends AppCompatActivity {
 
         Utils.writeFile(this, "history.txt", text + '\n');
 
-        if(hidecheckBox.isChecked())
-        {
+        if(hidecheckBox.isChecked()) {
             Toast.makeText(this, text, Toast.LENGTH_LONG).show();
 
             textView.setText("你到底輸入了甚麼??");
@@ -281,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
         //}
 
         //textView.setText(text);
+
         //editText.setText(""); //清除原本的輸入，也就是設為空字串
 
         // 把輸入的值隱藏起來，全部用*取代
@@ -294,34 +352,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 從Main Activity 切到 Drink Menu Activity
-    public void goToMenu(View view)
-    {
+    public void goToMenu(View view) {
         Intent intent = new Intent(); //建立一個Intent的物件
         intent.setClass(this, DrinkMenuActivity.class);//當這個物件被使用到時，會將intent自己的class設定為DrinkMenuActivity的Class
 
         //startActivity(intent);// 設定完intent的class後要去執行，這時當按下menu的按鈕後，就會跳到另一個Activity去。
+        //下面為上面一行呼叫另一個Activity的改寫，因為我們現在要串進去一個result code，所以寫法如下
         startActivityForResult(intent, REQUEST_CODE_MENU_ACTIVITY);
+        // 若要傳資料進去另一個Activity就用 intent.putExtra(String str, String Key)
     }
 
 
     // 從Drink Menu Activity切回Main Activity
+    // 從SimpleUIApplication切回Main Activity
+    // onActivityResult為切回mainActivity的主要接口
+    // 這個整數requestCode提供給onActivityResult，是以便確認返回的數據是從哪個Activity返回的。
+    // requestCode和startActivityForResult中的requestCode相對應。
+    // resultCode是由子Activity通過其setResult()方法返回。
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == REQUEST_CODE_MENU_ACTIVITY)
-        {
-            if (resultCode == RESULT_OK)
-            {
+        if(requestCode == REQUEST_CODE_MENU_ACTIVITY) {
+            if (resultCode == RESULT_OK) {
                 //textView.setText(data.getStringExtra("result"));
 
+                // 從前一個DrinkMenuActivity傳回一個名為data的物件與一個result code
+                // 而data裡面存放一個名為result的key值，其對應到一個JSONArray的array資料
+                // 這個array裡面又存放三個key值分別為name, lNumber, mNumber，且分別對應到三種資料
+                // 所以現在把data這個資料
                 menuResult = data.getStringExtra("result");
+                // P.S getStringExtra說明:
+                // 在當前Activity1使用startActivity(intent)或者startActivityForResult(intent, code)方法跳轉到另一個Activity2之前(如上面goToMenu裡面所用)，
+                // 如果要傳遞某些String類型數據給Activity2，則會執行intent.putExtra(String str, String Key),
+                // 將String數據打包到Intent中，並給它一個Key標識。
+                // 在Activity2當中，getIntent()方法獲得這個intent，然後再getStringExtra(Key)，
+                // 就可以獲得你之前打包的那個數據了。
 
+
+                // 接下來分別把裡面資料的值取出來，因為資料唯一筆一筆的，所以可以計算長度當作資料筆數。
+                // 把原本的資料用JSONArray的格式來表示
+                // 所以先把於原本的menuResult用array這個JSINArray格式來存，再去做調用
                 try{
                     JSONArray array = new JSONArray(menuResult);
                     String text = "";
-                    for(int i=0; i<array.length(); i++)
-                    {
+                    for(int i=0; i<array.length(); i++) {
                         JSONObject order = array.getJSONObject(i);
 
                         String name = order.getString("name");
@@ -329,21 +404,21 @@ public class MainActivity extends AppCompatActivity {
                         String mNumber = String.valueOf(order.getInt("mNumber"));
 
                         text = text + name + "l:" + lNumber + "m:" + mNumber + "\n";
-
                     }
-                    textView.setText(text);
+                    textView.setText(text);// 把最後的text結果設定回去畫面上的textView
                 }
-                catch (JSONException e)
-                {
+                // 用來抓例外錯誤狀況
+                catch (JSONException e){
                     e.printStackTrace();
                 }
             }
         }
-        else if(requestCode == REQUEST_CODE_CAMERA)
-        {
-            if(requestCode == RESULT_OK)
-            {
+        else if(requestCode == REQUEST_CODE_CAMERA) {
+            if(requestCode == RESULT_OK) {
+                Log.d("Camera Result:", "OK1");
                 photoView.setImageURI(Utils.getPhotoUri());
+                Log.d("Camera Result:", "OK2");
+                //Log.d("debug", "Photo Show ERROR!REQUEST_CODE_CAMERA: "+REQUEST_CODE_CAMERA);
             }
         }
     }
@@ -361,18 +436,14 @@ public class MainActivity extends AppCompatActivity {
         //return super.onOptionsItemSelected(item);
 
         int id = item.getItemId();
-        if(id == R.id.action_take_photo)
-        {
+        if(id == R.id.action_take_photo) {
             Toast.makeText(this, "take photo", Toast.LENGTH_LONG).show();
             goToCamera();
         }
-
         return super.onOptionsItemSelected(item);
-
     }
 
-    private void goToCamera()
-    {
+    private void goToCamera() {
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Utils.getPhotoUri());
