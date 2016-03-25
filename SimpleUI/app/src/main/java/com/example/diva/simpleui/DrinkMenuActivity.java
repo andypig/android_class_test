@@ -68,41 +68,6 @@ public class DrinkMenuActivity extends AppCompatActivity {
         finish();
     }
 
-    /*private int drinkCount()
-    {
-        int lCount;
-        int mCount;
-
-        lCount = 0;
-        mCount = 0;
-
-
-
-        JSONArray array = getData();
-
-        for(int i =0; i < array.length(); i++) {
-            try {
-                //建立一個json格式的物件
-                JSONObject object = new JSONObject();
-
-
-
-                //把上面取得的資料，利用KEY, VALUE的JSON格式定義，分別塞進去name, lNumber, mNumber這三個key所代表的空間裡。
-                object.put("name", drinkName);
-                object.put("lNumber", lNumber);
-                object.put("mNumber", mNumber);
-
-                // 再把JSON格式的物件丟到一開始宣告的JSON格式的陣列裡面
-                array.put(object);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-    }*/
-
     public JSONArray getData()
     {
         // 透過id先取得整個DrinkMenuActivity的Layout

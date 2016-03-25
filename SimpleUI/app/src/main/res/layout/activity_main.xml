@@ -76,8 +76,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/photoView"
+        android:layout_below="@+id/button2"
+        android:layout_centerInParent="true" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/spinner"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/button2" />
+        android:layout_marginTop="33dp"
+        android:visibility="gone" />
 
 
 </RelativeLayout>
