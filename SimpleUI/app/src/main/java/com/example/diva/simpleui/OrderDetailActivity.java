@@ -5,8 +5,11 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -21,6 +24,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     ImageView photo;
     ImageView staticMapImageView;
     WebView webView;
+    Switch open;
 
     // 怕url在運行時會消失，所以用在class下得變數去接
     //private String url;
@@ -37,9 +41,10 @@ public class OrderDetailActivity extends AppCompatActivity {
         photo = (ImageView) findViewById(R.id.photoView);
         staticMapImageView = (ImageView) findViewById(R.id.staticMapImageView);
         webView = (WebView) findViewById(R.id.webView);
+        open = (Switch)findViewById(R.id.open);
 
         note.setText(getIntent().getStringExtra("note"));
-        String storeInformation= getIntent().getStringExtra("storeInfo");
+        final String storeInformation= getIntent().getStringExtra("storeInfo");
         storeInfo.setText(getIntent().getStringExtra("storeInfo"));
         String menuResult = getIntent().getStringExtra("menu");
 
@@ -123,6 +128,30 @@ public class OrderDetailActivity extends AppCompatActivity {
 //                super.onPostExecute(bytes);
 //            }
 //        }.execute(url);
+
+
+//        作業2
+
+        open.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            //String address = storeInformation.split(",")[1];
+            String url = getIntent().getStringExtra("photoURL");
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // TODO Auto-generated method stub
+                if (isChecked) {
+                    staticMapImageView.setVisibility(View.INVISIBLE);
+                    webView.setVisibility(View.VISIBLE);
+                    //new GeoCodingTask().execute(address);
+                } else {
+                    staticMapImageView.setVisibility(View.VISIBLE);
+                    webView.setVisibility(View.INVISIBLE);
+                    new ImageLoadingTask(photo).execute(url);
+                }
+            }
+        });
+
     }
 
     class GeoCodingTask extends AsyncTask<String, Void, byte[]> {
