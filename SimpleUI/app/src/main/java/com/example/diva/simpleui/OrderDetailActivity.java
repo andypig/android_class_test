@@ -141,13 +141,11 @@ public class OrderDetailActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // TODO Auto-generated method stub
                 if (isChecked) {
-                    staticMapImageView.setVisibility(View.INVISIBLE);
+                    staticMapImageView.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
-                    //new GeoCodingTask().execute(address);
                 } else {
                     staticMapImageView.setVisibility(View.VISIBLE);
-                    webView.setVisibility(View.INVISIBLE);
-                    new ImageLoadingTask(photo).execute(url);
+                    webView.setVisibility(View.GONE);
                 }
             }
         });

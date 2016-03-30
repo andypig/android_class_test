@@ -68,15 +68,14 @@
                 android:id="@+id/open"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOff="ImageView開啟中"
-                android:textOn="WebView開啟中"
+                android:textOff="未點選"
+                android:textOn="已點選"
                 android:layout_below="@+id/linearLayout" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/staticMapImageView"
-                android:layout_alignParentLeft="true"
                 android:layout_below="@+id/open" />
 
             <WebView
