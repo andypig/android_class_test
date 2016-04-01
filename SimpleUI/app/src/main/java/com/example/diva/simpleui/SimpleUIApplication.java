@@ -1,6 +1,8 @@
 package com.example.diva.simpleui;
 
 import android.app.Application;
+
+import com.facebook.FacebookSdk;
 import com.parse.Parse;
 
 /**
@@ -11,7 +13,11 @@ public class SimpleUIApplication extends Application{
     public void onCreate(){
         super.onCreate();
 
+        // Parse 的使用設定
         Parse.enableLocalDatastore(this);
         Parse.initialize(this);
+
+        // facebook 的使用設定:
+        FacebookSdk.sdkInitialize(getApplicationContext());
     }
 }

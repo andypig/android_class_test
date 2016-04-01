@@ -18,4 +18,6 @@
     <string name="note">訂單內容</string>
     <string name="storeInfo">分店名稱</string>
     <string name="drinkNum">飲料數量</string>
+
+    <string name="facebook_app_id">212666772433442</string>
 </resources>

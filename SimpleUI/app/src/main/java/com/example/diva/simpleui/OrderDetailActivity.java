@@ -11,6 +11,15 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +34,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     ImageView staticMapImageView;
     WebView webView;
     Switch open;
+
+    // 為了使用Google Map Fragment而建立變數
+    MapFragment mapFragment;
+    GoogleMap map;
 
     // 怕url在運行時會消失，所以用在class下得變數去接
     //private String url;
@@ -47,6 +60,18 @@ public class OrderDetailActivity extends AppCompatActivity {
         final String storeInformation= getIntent().getStringExtra("storeInfo");
         storeInfo.setText(getIntent().getStringExtra("storeInfo"));
         String menuResult = getIntent().getStringExtra("menu");
+
+        //拿到fragment的元件:
+        mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.mapFragment);
+
+        // 拿到Google Map:
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+            }
+        });
+
 
         try {
             JSONArray array = new JSONArray(menuResult);
@@ -153,7 +178,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     class GeoCodingTask extends AsyncTask<String, Void, byte[]> {
-        private double[] latlng;
+        private double[] latlng; //放經緯度的Array
         private String url;
 
         @Override
@@ -169,6 +194,29 @@ public class OrderDetailActivity extends AppCompatActivity {
             webView.loadUrl(url);
             Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             staticMapImageView.setImageBitmap(bmp);
+
+            // 建立Google Map吃得下去的經緯度格式:
+            LatLng location = new LatLng(latlng[0], latlng[1]);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17));
+
+            // 在定位到的地圖上，加上標題，小標題，跟位置的大頭針
+            String[] storeInfo = getIntent().getStringExtra("storeInfo").split(",");
+            map.addMarker(new MarkerOptions()
+                                .title(storeInfo[0])
+                                .snippet(storeInfo[1])
+                                .position(location)
+            );
+
+            // 增加事件: 來檢查是否有定位到!
+            // 按下位置大頭針，會出現pop up出店名的訊息名稱
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Toast.makeText(OrderDetailActivity.this, marker.getTitle(), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            });
+
             super.onPostExecute(bytes);
         }
     }
